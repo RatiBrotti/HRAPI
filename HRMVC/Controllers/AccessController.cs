@@ -6,6 +6,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json;
+using System.Security.Cryptography;
+using ShopMaster_3._0.Tools;
 
 namespace HRMVC.Controllers
 {
@@ -28,7 +30,15 @@ namespace HRMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Registration(Administrator register)
         {
-           
+            if (register.Password == register.ConfirmPassword && PasswordTools.IsValid(register.Password))
+            {
+                register.Password = PasswordTools.MD5Hash(register.Password)+ "secret key";
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
             // Create an instance of HttpClient using the above handler
             var client = new HttpClient(handler);
 
@@ -66,6 +76,19 @@ namespace HRMVC.Controllers
         [HttpPost]
         public IActionResult Login(LoginModel login)
         {
+
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            //var response = await client.GetAsync("/api/Administrator/Get");
+
+            //// Read the response content as a string
+            //var content = await response.Content.ReadAsStringAsync();
+            //List<Employee> employee = JsonConvert.DeserializeObject<List<Employee>>(content);
             if (login.UserName == "raticercvadze@gmail.com" && login.Password == "123")
             {
                 List<Claim> claims = new()
