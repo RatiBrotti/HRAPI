@@ -1,0 +1,39 @@
+﻿@model HRMVC.Models.Employee
+<div>
+    <h4>პროდუქტის დეტალები</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">პირადი ნომერი:</dt>
+        <dd class="col-sm-9">@Model.IdNumber</dd>
+
+        <dt class="col-sm-3">სახელი:</dt>
+        <dd class="col-sm-9">@Model.Name</dd>
+
+        <dt class="col-sm-3">გვარი:</dt>
+        <dd class="col-sm-9">@Model.LastName</dd>
+
+        <dt class="col-sm-3">სქესი:</dt>
+        <dd class="col-sm-9">@Model.Gender</dd>
+
+        <dt class="col-sm-3">დაბადების თარიღი:</dt>
+        <dd class="col-sm-9">@Model.BirthDate</dd>
+
+        <dt class="col-sm-3">თანამდებობა:</dt>
+        <dd class="col-sm-9">@Model.JobTitle</dd>
+
+        <dt class="col-sm-3">სტატუსი:</dt>
+        <dd class="col-sm-9">@Model.Status</dd>
+
+        <dt class="col-sm-3">მობილური:</dt>
+        <dd class="col-sm-9">@Model.Mobile</dd>
+
+        <dt class="col-sm-3">განთავისუფლების თარიღი:</dt>
+        <dd class="col-sm-9">@Model.DismissalDate</dd>
+    </dl>
+    <br />
+    <a style="color:blue" class="btn btn-warning" href="\Home\EditEmployee?idNumber=@Model.IdNumber">შეცვლა</a>
+    <br />
+    <br />
+    <a href="\Home\Index" class="btn btn-info">ჩამონათვალზე დაბრუნება</a>
+</div>
+

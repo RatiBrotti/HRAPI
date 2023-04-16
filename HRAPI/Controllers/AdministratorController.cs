@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HRAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class AdministratorController : ControllerBase
     {
@@ -82,7 +82,7 @@ namespace HRAPI.Controllers
         /// <returns>administrators</returns>
         [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("find/{searchWord}")]
+        [HttpGet("{searchWord}")]
         public async Task<ActionResult> Find(string searchWord)
         {
             searchWord = searchWord.ToUpper();

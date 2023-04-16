@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HRAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class EmploeeController : ControllerBase
     {
@@ -20,13 +20,13 @@ namespace HRAPI.Controllers
             _mapper = mapper;
         }
         /// <summary>
-        /// Creates Emploee entity and returns Administrator
+        /// Creates Emploee entity and returns Employee
         /// </summary>
         /// <param name="employee"></param>
-        /// <returns>administrator</returns>
+        /// <returns>Employee</returns>
         [ProducesResponseType(typeof(List<Employee>), StatusCodes.Status200OK)]
         [HttpPost]
-        public async Task<IActionResult> CreateAdministrator(Employee employee)
+        public async Task<IActionResult> CreateEmployee(Employee employee)
         {
             var employeeEntity = _mapper.Map<EmployeeEntity>(employee);
 
@@ -81,7 +81,7 @@ namespace HRAPI.Controllers
         /// <returns>Employees</returns>
         [ProducesResponseType(typeof(List<Employee>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("find/{searchWord}")]
+        [HttpGet("{searchWord}")]
         public async Task<ActionResult> Find(string searchWord)
         {
             searchWord = searchWord.ToUpper();

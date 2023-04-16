@@ -1,0 +1,76 @@
+﻿@model HRMVC.Models.Employee
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Create an Account</h5>
+                    <form class="form-signin" asp-controller="Home" asp-action="CreateEmployee" method="post">
+                        <div class="form-label-group">
+                            <label asp-for="Name"></label>
+                            <input asp-for=Name class="form-control" placeholder="სახელი" required autofocus>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="LastName"></label>
+                            <input asp-for="LastName" class="form-control" placeholder="გვარი" required>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <label asp-for="Gender">სქესი:</label>
+                            <br />
+                            <label class="form-check-label" for="genderMale">მამრობითი</label>
+                            <input asp-for="Gender" class="form-check-input" type="radio" id="genderMale" value="true">
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label" for="genderFemale">მდედრობითი</label>
+                            <input asp-for="Gender" class="form-check-input" type="radio" id="genderFemale" value="false">
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="JobTitle"></label>
+                            <input asp-for="JobTitle" class="form-control" placeholder="თანამდებობა" required>
+                            <span asp-validation-for="JobTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="IdNumber"></label>
+                            <input asp-for="IdNumber" class="form-control" placeholder="პირადი ნომერი" required>
+                            <span asp-validation-for="IdNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="Status"></label>
+                            <input type="text" asp-for="Status" class="form-control" placeholder="სტატუსი" required>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                        <div class="form-label-group">
+                            <label asp-for="Mobile"></label>
+                            <input type="text" asp-for="Mobile" class="form-control" placeholder="მობილური" required>
+                            <span asp-validation-for="Mobile" class="text-danger"></span>
+                        </div>
+                        <div class="form-label-group">
+                            <label asp-for="BirthDate"></label>
+                            <input type="datetime" asp-for="BirthDate" class="form-control" placeholder="წელი-თვე-რიცხვი" required>
+                            <span asp-validation-for="BirthDate" class="text-danger"></span>
+                        </div>
+                        <div class="form-label-group">
+                            <label asp-for="DismissalDate"></label>
+                            <input type="datetime" asp-for="DismissalDate" class="form-control" placeholder="წელი-თვე-რიცხვი" required>
+                            <span asp-validation-for="DismissalDate" class="text-danger"></span>
+                        </div>
+                        <br />
+
+                        <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">შექმნა</button>
+                        <hr class="my-4">
+                    </form>
+
+                    <a href="/Home/Login">დარეგისტრირებული ხართ? გადადით ავტორიზაციის გვერდზე</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+﻿@model HRMVC.Models.Employee
+
+<form method="post" action="EditEmployee">
+    <input type="hidden" name="id" value="@Model.IdNumber" />
+    <div class="form-group">
+        <label for="name">პირადი ნომერი</label>
+        <input type="text" class="form-control" id="idNumber" name="IdNumber" value="@Model.IdNumber" />
+    </div>
+    <div class="form-group">
+        <label for="sku">სახელი</label>
+        <input type="text" class="form-control" id="name" name="Name" value="@Model.Name" />
+    </div>
+    <div class="form-group">
+        <label for="barcode">გვარი</label>
+        <input type="text" class="form-control" id="lastName" name="LastName" value="@Model.LastName" />
+    </div>
+    <label for="size">სქესი</label>
+    <div class="form-group">        
+        <label class="form-check-label" for="genderMale">მამრობითი</label>
+        <input class="form-check-input" type="radio" id="genderMale" name="Gender" value="@Model.Gender">
+    </div>
+    <div class="form-group">
+        <label class="form-check-label" for="genderMale">მდედრობითი</label>
+        <input class="form-check-input" type="radio" id="genderMale" name="Gender" value="@Model.Gender">
+    </div>
+    <div class="form-group">
+        <label for="price">დაბადების თარიღი</label>
+        <input type="date" class="form-control" id="birthDate" name="BirthDate" value="@Model.BirthDate" />
+    </div>
+    <div class="form-group">
+        <label for="quantityOfProvider">თანამდებობა</label>
+        <input type="text" class="form-control" id="jobTitle" name="JobTitle" value="@Model.JobTitle" />
+    </div>
+    <div class="form-group">
+        <label for="quantityCounted">სტატუსი</label>
+        <input type="text" class="form-control" id="status" name="Status" value="@Model.Status" />
+    </div>
+    <div class="form-group">
+        <label for="price">მობილური</label>
+        <input type="text" class="form-control" id="mobile" name="Mobile" value="@Model.Mobile" />
+    </div>
+    <div class="form-group">
+        <label for="price">განთავისუფლების თარიღი</label>
+        <input type="date" class="form-control" id="dismissalDate" name="DismissalDate" value="@Model.DismissalDate" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">განახლება</button>
+    <br /><br /><br />
+    <a class="btn btn-danger" href="\Home\DeleteEmployee?id=@Model.IdNumber">წაშლა</a>
+</form>
+

@@ -1,8 +1,51 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model List<HRMVC.Models.Employee>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+<div>
+    @if (ViewBag.error != null)
+    {
+        <h1 style="color:red">@ViewData["error"]</h1>
+    }
 </div>
+<table class="table table-striped table-bordered">
+    <tr>
+        <td>სახელი</td>
+        <td>გვარი</td>
+        <td>თანამდებობა</td>
+        <td>სტატუსი</td>
+        <td></td>
+        <td></td>
+        <td>
+            <a style="color:black" class="btn btn-success" href="\Home\CreateEmployee">ახალის დამატება</a>
+        </td>
+
+    </tr>
+    @{        
+
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.LastName</td>
+                <td>@item.JobTitle</td>
+                <td>@item.Status</td>
+                <td>
+                    <a style="color:green" class="btn btn-warning" href="\Home\EmployeeDetails?idNumber=@item.IdNumber">დეტალურად</a>
+                </td>
+                <td>
+                    <a style="color:blue" class="btn btn-warning" href="\Home\EditEmployee?idNumber=@item.IdNumber">შეცვლა</a>
+                </td>
+                <td>
+                    <a style="color:black" class="btn btn-danger" href="\Home\DeleteEmployee?idNumber=@item.IdNumber">წაშლა</a>
+                </td>
+            </tr>
+        }
+    }
+
+</table>
+
+
+
+
+
+

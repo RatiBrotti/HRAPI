@@ -1,0 +1,72 @@
+﻿@model HRMVC.Models.Administrator
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Create an Account</h5>
+                    <form class="form-signin" asp-controller="Access" asp-action="Registration" method="post">
+                        <div class="form-label-group">
+                            <label asp-for="Name"></label>
+                            <input asp-for=Name class="form-control" placeholder="სახელი" required autofocus>
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="LastName"></label>
+                            <input asp-for="LastName" class="form-control" placeholder="გვარი" required>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <label asp-for="Gender">სქესი:</label>
+                            <br />
+                            <label class="form-check-label" for="genderMale">მამრობითი</label>
+                            <input asp-for="Gender" class="form-check-input" type="radio" id="genderMale" value="true">
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label" for="genderFemale">მდედრობითი</label>
+                            <input asp-for="Gender" class="form-check-input" type="radio" id="genderFemale" value="false">
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" class="form-control" placeholder="ელ ფოსტა" required>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="IdNumber"></label>
+                            <input asp-for="IdNumber" class="form-control" placeholder="პირადი ნომერი" required>
+                            <span asp-validation-for="IdNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-label-group">
+                            <label asp-for="Password"></label>
+                            <input type="password" asp-for="Password" class="form-control" placeholder="პაროლი" required>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-label-group">
+                            <label asp-for="ConfirmPassword"></label>
+                            <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="გაიმეორეთ პაროლი" required>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-label-group">
+                            <label asp-for="BirthDate"></label>
+                            <input type="datetime" asp-for="BirthDate" class="form-control" placeholder="წელი-თვე-რიცხვი" required>
+                            <span asp-validation-for="BirthDate" class="text-danger"></span>
+                        </div>
+                        <br />
+
+                        <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">რეგისტრაცია</button>
+                        <hr class="my-4">
+                    </form>
+
+                    <a href="/Access/Login">დარეგისტრირებული ხართ? გადადით ავტორიზაციის გვერდზე</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
