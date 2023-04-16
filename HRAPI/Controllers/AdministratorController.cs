@@ -26,9 +26,15 @@ namespace HRAPI.Controllers
         /// <param name="administrator"></param>
         /// <returns>administrator</returns>
         [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         public async Task<IActionResult> CreateAdministrator(Administrator administrator)
         {
+            var checkAdministrator = _context.Administrators.FirstOrDefault(x => x.Email == administrator.Email || x.IdNumber == administrator.IdNumber);
+            if(checkAdministrator != null)
+            {
+                return BadRequest("ასეთი მომხმარებელი უკვე არსებობს");
+            }
             var administratorEntity = _mapper.Map<AdministratorEntity>(administrator);
 
             _context.Administrators.Add(administratorEntity);

@@ -5,11 +5,16 @@ using System.Text.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
 
 namespace HRMVC.Controllers
 {
     public class AccessController : Controller
     {
+        public HttpClientHandler handler = new()
+        {
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+        };
         public IActionResult LogOut()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -23,24 +28,28 @@ namespace HRMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Registration(Administrator register)
         {
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://localhost:7071/api/")
-            };
-            var json = JsonSerializer.Serialize(register);
+           
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
 
+            //create json
+            string json = JsonConvert.SerializeObject(register);
+
+            //create string with json
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            try
-            {
-                var response = await httpClient.PostAsync("/Administrator/CreateAdministrator", content);
-                response.EnsureSuccessStatusCode();
 
-                return Content("ki");
-            }
-            catch (Exception ex)
+            //post request
+            var response = await client.PostAsync("https://localhost:7071/api/Administrator/CreateAdministrator", content);
+
+            if (response.IsSuccessStatusCode)
             {
-                // Log or handle the exception
-                return View();
+                return RedirectToAction("Login", "Access");
+            }
+            else
+            {
+
+                return Content("Error creating employee: " + await response.Content.ReadAsStringAsync());
+
             }
         }
 
@@ -59,14 +68,14 @@ namespace HRMVC.Controllers
         {
             if (login.UserName == "raticercvadze@gmail.com" && login.Password == "123")
             {
-                List<Claim> claims = new List<Claim>()
+                List<Claim> claims = new()
                 {
                     new Claim(ClaimTypes.NameIdentifier, login.UserName),
                     new Claim(ClaimTypes.Email, login.Password),
                 };
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims,
+                ClaimsIdentity claimsIdentity = new(claims,
                     CookieAuthenticationDefaults.AuthenticationScheme);
-                AuthenticationProperties properties = new AuthenticationProperties()
+                AuthenticationProperties properties = new()
                 {
                     AllowRefresh = true,
                     IsPersistent = login.KeepLoggedIn

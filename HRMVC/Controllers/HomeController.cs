@@ -6,31 +6,30 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Net.Http;
 
 namespace HRMVC.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        Uri baseAddress = new Uri("http://localhost:11176");
+        //http request, disabling ssl
+        public HttpClientHandler handler = new()
+        {
+            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+        };
 
-        private readonly HttpClient _client;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _client = new HttpClient();
-            _client.BaseAddress = baseAddress;
+
         }
         [AllowAnonymous]
         public async Task<ActionResult> Index()
         {
-            // Create an instance of HttpClientHandler with SSL certificate validation disabled
-            var handler = new HttpClientHandler()
-            {
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-            };
 
             // Create an instance of HttpClient using the above handler
             var client = new HttpClient(handler);
@@ -43,10 +42,9 @@ namespace HRMVC.Controllers
 
             // Read the response content as a string
             var content = await response.Content.ReadAsStringAsync();
-            //Employee employee = JsonConvert.DeserializeObject<Employee>(content);
+            List<Employee> employee = JsonConvert.DeserializeObject<List<Employee>>(content);
 
-            // Return the response content as a view or JSON data
-            return Content(content); // or return Json(content);
+            return View(employee);
         }
 
         [HttpGet]
@@ -54,12 +52,32 @@ namespace HRMVC.Controllers
         {
             return View();
         }
-       
-        [HttpPost]
-        public IActionResult CreateEmployee(Employee employee)
-        {
 
-            return RedirectToAction("Index", "Home");
+        [HttpPost]
+        public async Task<ActionResult> CreateEmployee(Employee employee)
+        {
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            //create json
+            string json = JsonConvert.SerializeObject(employee);
+
+            //create string with json
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            //post request
+            var response = await client.PostAsync("https://localhost:7071/api/Emploee/CreateEmployee", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+
+                return Content("Error creating employee: " + await response.Content.ReadAsStringAsync());
+
+            }
         }
 
         [HttpGet]
@@ -84,9 +102,9 @@ namespace HRMVC.Controllers
         [HttpPost]
         public IActionResult EditEmployee(Employee employee)
         {
-           
+
             return RedirectToAction("index", "Home");
-        }       
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
