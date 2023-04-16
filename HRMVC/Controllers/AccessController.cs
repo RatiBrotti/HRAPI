@@ -32,11 +32,11 @@ namespace HRMVC.Controllers
         {
             if (register.Password == register.ConfirmPassword && PasswordTools.IsValid(register.Password))
             {
-                register.Password = PasswordTools.MD5Hash(register.Password)+ "secret key";
+                register.Password = PasswordTools.MD5Hash(register.Password + "secret key");
             }
             else
             {
-                return BadRequest();
+                return Content("პაროლები არ ემთხვევა ან არ აკმაყოფილებს მოთხოვნებს");
             }
             
             // Create an instance of HttpClient using the above handler
@@ -74,22 +74,24 @@ namespace HRMVC.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Login(LoginModel login)
+        public async Task<ActionResult> Login(LoginModel login)
         {
 
             // Create an instance of HttpClient using the above handler
-            var client = new HttpClient(handler);
-
-            // Set the base URL of the API endpoint
-            client.BaseAddress = new Uri("https://localhost:7071");
+            var client = new HttpClient(handler)
+            {
+                // Set the base URL of the API endpoint
+                BaseAddress = new Uri("https://localhost:7071")
+            };
 
             // Make a GET request to the API endpoint
-            //var response = await client.GetAsync("/api/Administrator/Get");
+            var response = await client.GetAsync("/api/Administrator/Get");
 
             //// Read the response content as a string
-            //var content = await response.Content.ReadAsStringAsync();
-            //List<Employee> employee = JsonConvert.DeserializeObject<List<Employee>>(content);
-            if (login.UserName == "raticercvadze@gmail.com" && login.Password == "123")
+            var content = await response.Content.ReadAsStringAsync();
+            List<Administrator> administrators = JsonConvert.DeserializeObject<List<Administrator>>(content);
+            var administrator = administrators[0];
+            if (login.UserName == administrator.IdNumber || login.UserName.ToLower() == administrator.Email && PasswordTools.MD5Hash(login.Password+"secret key") == administrator.Password)
             {
                 List<Claim> claims = new()
                 {

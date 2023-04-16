@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using HRAPI.Entities;
-using HRAPI.Models;
+using HRMVC.Models;
 
 namespace Lemondo.Mapper
 {
@@ -8,17 +7,18 @@ namespace Lemondo.Mapper
     {
         public MapperProfiler()
         {
-            CreateMap<AdministratorEntity, Administrator>().ReverseMap();
-            CreateMap<AdministratorEntity, Administrator>().ReverseMap()
+            CreateMap<Administrator, Administrator>().ReverseMap();
+            CreateMap<Administrator, Administrator>().ReverseMap()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToLower()))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName.ToLower()))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.ToLower()));
             
-            CreateMap<EmployeeEntity, Employee>().ReverseMap();
-            CreateMap<EmployeeEntity, Employee>().ReverseMap()
+            CreateMap<Employee, Employee>().ReverseMap();
+            CreateMap<Employee, Employee>().ReverseMap()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToLower()))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName.ToLower()))
-                .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.JobTitle.ToLower()));
+                .ForMember(dest => dest.JobTitle, opt => opt.MapFrom(src => src.JobTitle.ToLower()))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToLower()));
 
 
         }

@@ -6,17 +6,16 @@ namespace ShopMaster_3._0.Tools
 {
     public class PasswordTools
     {
-        public static string token="";
         public static string PasswordSalt()
         {
             return "GoodByeBlueSkie";
         } 
 
-        private static int Minimum_Length = 7;
-        private static int Upper_Case_length = 1;
-        private static int Lower_Case_length = 1;
-        private static int NonAlpha_length = 1;
-        private static int Numeric_length = 1;
+        private static readonly int Minimum_Length = 7;
+        private static readonly int Upper_Case_length = 1;
+        private static readonly int Lower_Case_length = 1;
+        private static readonly int NonAlpha_length = 1;
+        private static readonly int Numeric_length = 1;
 
         public static bool IsValid(string Password)
         {
@@ -56,7 +55,7 @@ namespace ShopMaster_3._0.Tools
             byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
             byte[] hash = md5.ComputeHash(inputBytes);
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             for (int i = 0; i < hash.Length; i++)
             {
                 sb.Append(hash[i].ToString("x2"));

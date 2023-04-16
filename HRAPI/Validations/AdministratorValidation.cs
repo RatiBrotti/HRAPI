@@ -24,10 +24,6 @@ namespace HRAPI.Validations
                 .NotEmpty()
                 .WithMessage("პაროლის ველი არ უნდა იყოს ცარიელი");
 
-            RuleFor(x => x.ConfirmPassword)
-                .NotEmpty()
-                .WithMessage("პაროლის განმეორებითი ველი არ უნდა იყოს ცარიელი");
-
             RuleFor(x => x.IdNumber)
                 .NotEmpty()
                 .Length(11)

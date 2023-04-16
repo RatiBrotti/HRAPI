@@ -84,7 +84,6 @@ namespace HRAPI.Controllers
         [HttpGet("{searchWord}")]
         public async Task<ActionResult> Find(string searchWord)
         {
-            searchWord = searchWord.ToUpper();
             var employeeEntities = _context.Employees.Where(a => a.Name.Contains(searchWord) || a.LastName.Contains(searchWord) || a.IdNumber.Contains(searchWord) || a.JobTitle.Contains(searchWord) || a.Status.Contains(searchWord));
             if (employeeEntities == null) return NotFound(searchWord);
             var eployees = _mapper.Map<IEnumerable<Employee>>(employeeEntities);
