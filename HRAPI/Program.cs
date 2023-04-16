@@ -13,6 +13,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//disable certificate validation
+builder.Services.AddHttpClient("MyHttpClient", client =>
+{
+    client.DefaultRequestHeaders.Add("User-Agent", "MyUserAgent");
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
 
 //validation
 

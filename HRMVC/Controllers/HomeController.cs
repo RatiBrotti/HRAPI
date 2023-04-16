@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace HRMVC.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:44342/api");
+        Uri baseAddress = new Uri("http://localhost:11176");
 
         private readonly HttpClient _client;
         private readonly ILogger<HomeController> _logger;
@@ -23,18 +24,31 @@ namespace HRMVC.Controllers
             _client.BaseAddress = baseAddress;
         }
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            List<Employee> employeeList = new List<Employee>();
-            HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/Employee/Get").Result;
-            if (response.IsSuccessStatusCode)
+            // Create an instance of HttpClientHandler with SSL certificate validation disabled
+            var handler = new HttpClientHandler()
             {
-                string data = response.Content.ReadAsStringAsync().Result;
-                employeeList = JsonConvert.DeserializeObject<List<Employee>>(data);
-            }
-            return View(employeeList);
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+            };
+
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            var response = await client.GetAsync("/api/Emploee/Get");
+
+            // Read the response content as a string
+            var content = await response.Content.ReadAsStringAsync();
+            //Employee employee = JsonConvert.DeserializeObject<Employee>(content);
+
+            // Return the response content as a view or JSON data
+            return Content(content); // or return Json(content);
         }
-      
+
         [HttpGet]
         public IActionResult CreateEmployee()
         {
