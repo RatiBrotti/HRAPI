@@ -55,14 +55,20 @@ namespace HRAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateEmployee(Employee employee)
         {
-            var updateEmployee = _context.Employees.FirstOrDefault(x => x.IdNumber == employee.IdNumber);
-            if (updateEmployee == null)
+            var employeeEntity = _context.Employees.FirstOrDefault(x => x.IdNumber == employee.IdNumber);
+            if (employeeEntity == null)
             {
                 return BadRequest("ასეთი თანამშრომელი არ არსებობს");
             }
-            var employeeEntity = _mapper.Map<EmployeeEntity>(employee);
-            updateEmployee = employeeEntity;
-            _context.Update(updateEmployee);
+            employeeEntity.Name = employee.Name;
+            employeeEntity.LastName = employee.LastName;
+            employeeEntity.Gender = employee.Gender;
+            employeeEntity.BirthDate = employee.BirthDate;
+            employeeEntity.JobTitle = employee.JobTitle;
+            employeeEntity.Status = employee.Status;
+            employeeEntity.DismissalDate = employee.DismissalDate;
+            employeeEntity.Mobile = employee.Mobile;
+
             _context.SaveChanges();
 
             var employeeResponse = _mapper.Map<Employee>(employeeEntity);

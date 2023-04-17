@@ -46,6 +46,38 @@ namespace HRMVC.Controllers
 
             return View(employee);
         }
+        public async Task<ActionResult> Search(string searchWord)
+        {
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            var response = await client.GetAsync("/api/Emploee/Find/"+searchWord);
+
+            // Read the response content as a string
+            var content = await response.Content.ReadAsStringAsync();
+            List<Employee> employee = JsonConvert.DeserializeObject<List<Employee>>(content);
+            if (response.IsSuccessStatusCode)
+            {
+                return View(employee);
+            }
+            else if (employee == null)
+            {
+                ViewBag.Message = "ჩანაწერი ვერ მოიძებნა";
+                return RedirectToAction("Index", "Home", new {message=ViewBag.Message});  
+            }
+            else
+            {
+                ViewBag.Message = await response.Content.ReadAsStringAsync();
+
+                return RedirectToAction("Index", "Home",new {message=ViewBag.Message});
+            }
+
+            
+        }
 
         [HttpGet]
         public IActionResult CreateEmployee(string message)
