@@ -28,6 +28,9 @@ namespace HRMVC.Context
 
             builder.HasIndex(e => e.IdNumber)
                 .IsUnique();
+
+            builder.HasIndex(e=>e.Email)
+                .IsUnique();
         }
 
     }

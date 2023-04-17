@@ -23,22 +23,32 @@ namespace HRMVC.Controllers
             return RedirectToAction("Login", "Access");
         }
         [HttpGet]
-        public IActionResult Registration()
+        public IActionResult Registration(string message)
         {
+            ClaimsPrincipal claimuser = HttpContext.User;
+            if (claimuser.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            ViewBag.Message=message;
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Registration(Administrator register)
-        {
-            if (register.Password == register.ConfirmPassword && PasswordTools.IsValid(register.Password))
+        {           
+            if (register.Password != register.ConfirmPassword)
             {
-                register.Password = PasswordTools.MD5Hash(register.Password + "secret key");
+                ViewBag.Message = "პაროლი არ ემთხვევა ერთმანეთს";
+                return RedirectToAction("Registration", "Access", new { message = ViewBag.Message });
             }
-            else
+            else if (!PasswordTools.IsValid(register.Password))
             {
-                return Content("პაროლები არ ემთხვევა ან არ აკმაყოფილებს მოთხოვნებს");
+                ViewBag.Message = "პაროლი არის ზედმეტად მარტივი";
+                return RedirectToAction("Registration", "Access", new { message = ViewBag.Message });
             }
-            
+
+            register.Password = PasswordTools.MD5Hash(register.Password + "secret key");
+
             // Create an instance of HttpClient using the above handler
             var client = new HttpClient(handler);
 
@@ -53,24 +63,28 @@ namespace HRMVC.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Login", "Access");
+                ViewBag.Message = "რეგისტრაცია წარმატებით დასრულდა, გაიარეთ ავტორიზაცია";
+                return RedirectToAction("Login", "Access", new { message = ViewBag.Message });
             }
             else
             {
+                ViewBag.Message = await response.Content.ReadAsStringAsync();
 
-                return Content("Error creating employee: " + await response.Content.ReadAsStringAsync());
+                return RedirectToAction("Login", "Access", new { message = ViewBag.Message });
 
             }
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string message)
         {
+            
             ClaimsPrincipal claimuser = HttpContext.User;
             if (claimuser.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
+            ViewBag.Message = message;
             return View();
         }
         [HttpPost]
@@ -85,12 +99,13 @@ namespace HRMVC.Controllers
             };
 
             // Make a GET request to the API endpoint
-            var response = await client.GetAsync("/api/Administrator/Get");
+            var response = await client.GetAsync("/api/Administrator/GetAdministratorByUserName/"+login.UserName);
 
-            //// Read the response content as a string
+            // Read the response content as a string
             var content = await response.Content.ReadAsStringAsync();
-            List<Administrator> administrators = JsonConvert.DeserializeObject<List<Administrator>>(content);
-            var administrator = administrators[0];
+            //deserialize
+            Administrator administrator = JsonConvert.DeserializeObject<Administrator>(content);
+
             if (login.UserName == administrator.IdNumber || login.UserName.ToLower() == administrator.Email && PasswordTools.MD5Hash(login.Password+"secret key") == administrator.Password)
             {
                 List<Claim> claims = new()
@@ -106,12 +121,18 @@ namespace HRMVC.Controllers
                     IsPersistent = login.KeepLoggedIn
                 };
 
-                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity), properties);
 
-                return Content("ki");
+                ViewBag.Message = "გამარჯობა "+administrator.Name;
+
+                return RedirectToAction("Index", "Home", new {message = ViewBag.Message});
             }
-            return RedirectToAction("Index","Home");
+            else
+            {
+                ViewBag.Message = "მომხმარებლის სახელი ან პაროლი არასწორია ";
+            }
+            return RedirectToAction("Login","Access", new { message = ViewBag.Message });
         }
     }
 }

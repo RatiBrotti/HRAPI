@@ -25,12 +25,44 @@ namespace HRAPI.Controllers
         /// <param name="employee"></param>
         /// <returns>Employee</returns>
         [ProducesResponseType(typeof(List<Employee>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee(Employee employee)
         {
+            var checkEmployee = _context.Employees.FirstOrDefault(x=>x.IdNumber==employee.IdNumber);
+            if (checkEmployee != null)
+            {
+                return BadRequest("ასეთი თანამშრომელი უკვე არსებობს");
+            }
             var employeeEntity = _mapper.Map<EmployeeEntity>(employee);
 
             _context.Employees.Add(employeeEntity);
+            _context.SaveChanges();
+
+            var employeeResponse = _mapper.Map<Employee>(employeeEntity);
+
+            return Ok(employeeResponse);
+
+        }
+
+        /// <summary>
+        /// Updates Emploee entity and returns Employee
+        /// </summary>
+        /// <param name="employee"></param>
+        /// <returns>Employee</returns>
+        [ProducesResponseType(typeof(List<Employee>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPut]
+        public async Task<IActionResult> UpdateEmployee(Employee employee)
+        {
+            var updateEmployee = _context.Employees.FirstOrDefault(x => x.IdNumber == employee.IdNumber);
+            if (updateEmployee == null)
+            {
+                return BadRequest("ასეთი თანამშრომელი არ არსებობს");
+            }
+            var employeeEntity = _mapper.Map<EmployeeEntity>(employee);
+            updateEmployee = employeeEntity;
+            _context.Update(updateEmployee);
             _context.SaveChanges();
 
             var employeeResponse = _mapper.Map<Employee>(employeeEntity);
@@ -64,7 +96,7 @@ namespace HRAPI.Controllers
         [ProducesResponseType(typeof(List<Employee>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{idNumber}")]
-        public async Task<IActionResult> GetAdministrator(string idNumber)
+        public async Task<IActionResult> GetEmployee(string idNumber)
         {
             var employeeEntity = _context.Employees.FirstOrDefault(x => x.IdNumber == idNumber);
             if (employeeEntity == null) return NotFound();
@@ -98,7 +130,7 @@ namespace HRAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpDelete("{idNumber}")]
-        public async Task<IActionResult> DeleteAdministrator(string idNumber)
+        public async Task<IActionResult> DeleteEmployee(string idNumber)
         {
             var employeeEntity = _context.Employees.FirstOrDefault(x => x.IdNumber == idNumber);
 

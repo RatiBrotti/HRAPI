@@ -5,11 +5,7 @@ using System.Text.RegularExpressions;
 namespace ShopMaster_3._0.Tools
 {
     public class PasswordTools
-    {
-        public static string PasswordSalt()
-        {
-            return "GoodByeBlueSkie";
-        } 
+    {       
 
         private static readonly int Minimum_Length = 7;
         private static readonly int Upper_Case_length = 1;

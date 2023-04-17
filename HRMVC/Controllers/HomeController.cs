@@ -20,6 +20,7 @@ namespace HRMVC.Controllers
             ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
         };
 
+
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
@@ -27,10 +28,9 @@ namespace HRMVC.Controllers
             _logger = logger;
 
         }
-        [AllowAnonymous]
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(string message)
         {
-
+            ViewBag.Message = message;
             // Create an instance of HttpClient using the above handler
             var client = new HttpClient(handler);
 
@@ -48,8 +48,9 @@ namespace HRMVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateEmployee()
+        public IActionResult CreateEmployee(string message)
         {
+            ViewBag.Message = message;
             return View();
         }
 
@@ -70,46 +71,138 @@ namespace HRMVC.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Index", "Home");
+                ViewBag.Message = "თანამშრომელი წარმატებით დაემატა";
+                return RedirectToAction("Index", "Home", new { message = ViewBag.Message });
             }
             else
             {
-
-                return Content("Error creating employee: " + await response.Content.ReadAsStringAsync());
+                ViewBag.Message = await response.Content.ReadAsStringAsync();
+                return RedirectToAction("CreateEmployee", "Home", new { message = ViewBag.Message });
 
             }
         }
 
         [HttpGet]
-        public IActionResult EmployeeDetails(string idNumber)
+        public async Task<ActionResult> EmployeeDetails(string idNumber, string? message)
         {
-            Employee employee = new()
-            {
-                IdNumber = idNumber
-            };
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            var response = await client.GetAsync("/api/Emploee/GetEmployee/" + idNumber);
+
+            // Read the response content as a string
+            var content = await response.Content.ReadAsStringAsync();
+            Employee employee = JsonConvert.DeserializeObject<Employee>(content);
+
             return View(employee);
         }
         [HttpGet]
-        public IActionResult EditEmployee(string idNumber)
+        public async Task<ActionResult> EditEmployee(string idNumber, string? message)
         {
-            var employee = new Employee
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            var response = await client.GetAsync("/api/Emploee/GetEmployee/" + idNumber);
+
+            // Read the response content as a string
+            var content = await response.Content.ReadAsStringAsync();
+            Employee employee = new();
+            employee = JsonConvert.DeserializeObject<Employee>(content);
+            if (message != null)
             {
-                IdNumber = idNumber,
-                Gender = true
-            };
+                ViewBag.Message= message;
+                return View(employee);
+            }
+
             return View(employee);
         }
         [HttpPost]
-        public IActionResult EditEmployee(Employee employee)
+        public async Task<ActionResult> EditEmployee(Employee employee)
         {
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
 
-            return RedirectToAction("index", "Home");
+            //create json
+            string json = JsonConvert.SerializeObject(employee);
+
+            //create string with json
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            //post request
+            var response = await client.PutAsync("https://localhost:7071/api/Emploee/UpdateEmployee", content);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                ViewBag.Message = "თანამშრომელი წარმატებით განახლდა";
+                return RedirectToAction("Index", "Home", new { message = ViewBag.Message });
+            }
+            else
+            {
+                ViewBag.Message = await response.Content.ReadAsStringAsync();
+                return RedirectToAction("EditEmployee", "Home", new { message = ViewBag.Message, idNUmber=employee.IdNumber });
+
+            }
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        [HttpGet]
+        public async Task<ActionResult> DeleteEmployee(string idNumber)
+        {
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            var response = await client.GetAsync("/api/Emploee/GetEmployee/" + idNumber);
+
+            // Read the response content as a string
+            var content = await response.Content.ReadAsStringAsync();
+            Employee employee = new();
+            employee = JsonConvert.DeserializeObject<Employee>(content);
+            return View(employee);
+        }
+        [HttpPost]
+        public async Task<ActionResult> DeleteEmployee(Employee employee)
+        {
+            // Create an instance of HttpClient using the above handler
+            var client = new HttpClient(handler);
+
+            // Set the base URL of the API endpoint
+            client.BaseAddress = new Uri("https://localhost:7071");
+
+            // Make a GET request to the API endpoint
+            var response = await client.DeleteAsync("/api/Emploee/DeleteEmployee/" + employee.IdNumber);
+
+            // Read the response content as a string
+            var content = await response.Content.ReadAsStringAsync();
+ 
+            var deletedEmployee = JsonConvert.DeserializeObject<Employee>(content);
+            if(response.IsSuccessStatusCode)
+            {
+                ViewBag.Message = "ჩანაწერი წარმატებით წაიშალა";
+                return RedirectToAction("Index", "Home", new {message=ViewBag.Message});
+            }
+            else
+            {
+                ViewBag.Message = await response.Content.ReadAsStringAsync();
+                return RedirectToAction("Index", "Home", new { message = ViewBag.Message });
+            }
+            
         }
     }
 }

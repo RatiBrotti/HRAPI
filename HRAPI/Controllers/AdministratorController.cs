@@ -82,6 +82,24 @@ namespace HRAPI.Controllers
         }
 
         /// <summary>
+        /// Returns administrator with userName
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns>administrator</returns>
+        [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet("{userName}")]
+        public async Task<IActionResult> GetAdministratorByUserName(string userName)
+        {
+            var administratorEntity = _context.Administrators.FirstOrDefault(x => x.IdNumber == userName || x.Email== userName);
+            if (administratorEntity == null) return NotFound();
+
+            var administrator = _mapper.Map<Administrator>(administratorEntity);
+
+            return Ok(administrator);
+        }
+
+        /// <summary>
         /// returns administrators conteining search word
         /// </summary>
         /// <param name="searchWord"></param>

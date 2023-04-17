@@ -32,6 +32,9 @@ namespace HRMVC.Context
 
             builder.Property(e => e.Mobile)
                 .HasMaxLength(50);
+
+            builder.HasIndex(e=>e.Mobile)
+                .IsUnique();
         }
     }
 }
