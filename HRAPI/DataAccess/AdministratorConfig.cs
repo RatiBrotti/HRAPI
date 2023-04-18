@@ -14,12 +14,6 @@ namespace HRMVC.Context
             builder.Property(e => e.IdNumber)
                 .HasMaxLength(11);
 
-            builder.Property(e => e.Name)
-                .HasMaxLength(50);
-
-            builder.Property(e => e.LastName)
-                .HasMaxLength(50);
-
             builder.Property(e => e.Email)
                 .HasMaxLength(80);
 
@@ -31,6 +25,12 @@ namespace HRMVC.Context
 
             builder.HasIndex(e=>e.Email)
                 .IsUnique();
+
+            builder.HasOne(e => e.Employee)
+                .WithMany()
+                .HasForeignKey(e => e.EmployeeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
     }

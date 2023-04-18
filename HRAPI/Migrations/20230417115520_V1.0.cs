@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HRAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class V11 : Migration
+    public partial class V10 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,25 +22,6 @@ namespace HRAPI.Migrations
 
             migrationBuilder.CreateSequence(
                 name: "val");
-
-            migrationBuilder.CreateTable(
-                name: "Administrator",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Gender = table.Column<bool>(type: "bit", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Administrator", x => x.Id);
-                });
 
             migrationBuilder.CreateTable(
                 name: "Emploee",
@@ -63,6 +44,39 @@ namespace HRAPI.Migrations
                     table.PrimaryKey("PK_Emploee", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Administrator",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IdNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Administrator", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Administrator_Emploee_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "Emploee",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Administrator_Email",
+                table: "Administrator",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Administrator_EmployeeId",
+                table: "Administrator",
+                column: "EmployeeId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Administrator_IdNumber",
                 table: "Administrator",
@@ -73,6 +87,12 @@ namespace HRAPI.Migrations
                 name: "IX_Emploee_IdNumber",
                 table: "Emploee",
                 column: "IdNumber",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Emploee_Mobile",
+                table: "Emploee",
+                column: "Mobile",
                 unique: true);
         }
 

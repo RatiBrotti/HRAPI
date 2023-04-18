@@ -99,21 +99,6 @@ namespace HRAPI.Controllers
             return Ok(administrator);
         }
 
-        /// <summary>
-        /// returns administrators conteining search word
-        /// </summary>
-        /// <param name="searchWord"></param>
-        /// <returns>administrators</returns>
-        [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{searchWord}")]
-        public async Task<ActionResult> Find(string searchWord)
-        {
-            var administratorEntities =  _context.Administrators.Where(a => a.Name.Contains(searchWord) || a.LastName.Contains(searchWord) || a.IdNumber.Contains(searchWord) || a.Email.Contains(searchWord));
-            if (administratorEntities == null) return NotFound(searchWord);
-            var administrators = _mapper.Map<IEnumerable<Administrator>>(administratorEntities);
-            return Ok(administrators);
-        }
 
         /// <summary>
         /// deletes administrator entity conteining id
