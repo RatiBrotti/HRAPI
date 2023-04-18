@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HRMVC.Context
 {
-    public class EmplyeeConfig : IEntityTypeConfiguration<EmployeeEntity>
+    public class EmplyeeConfig : IEntityTypeConfiguration<Employee>
     {
-        public void Configure(EntityTypeBuilder<EmployeeEntity> builder)
+        public void Configure(EntityTypeBuilder<Employee> builder)
         {
             builder.ToTable("Emploee");
 
@@ -35,6 +35,17 @@ namespace HRMVC.Context
 
             builder.HasIndex(e=>e.Mobile)
                 .IsUnique();
+
+            //builder.HasOne(e=>e.Administrator)
+            //    .WithOne(e=>e.Employee)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasIndex(e=>e.AdministratorId)
+                .IsUnique();
+
+            builder.Property(e => e.AdministratorId)
+                .IsRequired(false);
+                
         }
     }
 }

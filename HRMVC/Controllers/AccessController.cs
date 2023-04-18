@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Newtonsoft.Json;
 using System.Security.Cryptography;
-using ShopMaster_3._0.Tools;
+using HRMVC.Tools;
 
 namespace HRMVC.Controllers
 {

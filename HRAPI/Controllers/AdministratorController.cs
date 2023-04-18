@@ -25,24 +25,39 @@ namespace HRAPI.Controllers
         /// </summary>
         /// <param name="administrator"></param>
         /// <returns>administrator</returns>
-        [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AdministratorModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost]
-        public async Task<IActionResult> CreateAdministrator(Administrator administrator)
+        public async Task<IActionResult> CreateAdministrator(AdministratorModel administrator)
         {
-            var checkAdministrator = _context.Administrators.FirstOrDefault(x => x.Email == administrator.Email || x.IdNumber == administrator.IdNumber);
-            if(checkAdministrator != null)
+            var employeeEntityCheck = _context.Employees.FirstOrDefault(x => x.IdNumber == administrator.IdNumber);
+            if (employeeEntityCheck!=null && employeeEntityCheck.AdministratorId > 0 )
             {
-                return BadRequest("ასეთი მომხმარებელი უკვე არსებობს");
+                var admin = _context.Administrators.FirstOrDefault(x=>x.Id==employeeEntityCheck.AdministratorId);
+                admin.Password = administrator.Password;
+                admin.Email = administrator.Email;
+                _context.SaveChanges();
+                return Ok(administrator);
             }
-            var administratorEntity = _mapper.Map<AdministratorEntity>(administrator);
 
-            _context.Administrators.Add(administratorEntity);
-            _context.SaveChanges();
+            if (_context.Administrators.AsQueryable().Count() == 0)
+            {
+                var administratorEntity = _mapper.Map<Administrator>(administrator);
+                var employeeEntity = _mapper.Map<Employee>(administrator);
+                _context.Administrators.Add(administratorEntity);
+                _context.Employees.Add(employeeEntity);
+                _context.SaveChanges();
+                employeeEntity.AdministratorId = administratorEntity.Id;
+                _context.SaveChanges();
 
-            var AdministratorResponse = _mapper.Map<Administrator>(administratorEntity);
+                return Ok(administrator);
+            }
+            if(employeeEntityCheck.AdministratorId == 0)
+            {
+                return BadRequest("თქვენ არ გაქვთ რეგისტრაციის უფლება");
+            }
 
-            return Ok(AdministratorResponse);
+            return BadRequest("მოხდა შეცდომა ადმინისტრატორის რეგისტრაციისას");
 
         }
 
@@ -52,31 +67,50 @@ namespace HRAPI.Controllers
         /// <returns>List Of Administrators</returns>
         /// <response code="200">Returns List Of authors</response>
         /// <response code="404">If the item is null</response>
-        [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AdministratorModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var administratorsEntities = _context.Administrators.ToList();
+            var administratorsEntities = _context.Administrators.Include(x => x.Employee).ToList();
             if (administratorsEntities == null) return NotFound();
-            var administrators = _mapper.Map<IEnumerable<Administrator>>(administratorsEntities).ToList();
+
+            var administrators = administratorsEntities
+        .Select(administratorEntity => new AdministratorModel
+        {
+            IdNumber = administratorEntity.Employee.IdNumber,
+            Name = administratorEntity.Employee.Name,
+            LastName = administratorEntity.Employee.LastName,
+            Gender = administratorEntity.Employee.Gender,
+            BirthDate = administratorEntity.Employee.BirthDate,
+            Email = administratorEntity.Email,
+            Password = administratorEntity.Password,
+            JobTitle = administratorEntity.Employee.JobTitle,
+            Status = administratorEntity.Employee.Status,
+            Mobile = administratorEntity.Employee.Mobile,
+            DismissalDate = administratorEntity.Employee.DismissalDate
+        }).ToList();
+            if (administrators == null) return NotFound();
+
             return Ok(administrators);
         }
 
         /// <summary>
         /// Returns administrator conteining id
         /// </summary>
-        /// <param name="idNumber"></param>
-        /// <returns>administrator</returns>
-        [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
+        /// <param name = "idNumber" ></ param >
+        /// < returns > administrator </ returns >
+        [ProducesResponseType(typeof(List<AdministratorModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{idNumber}")]
         public async Task<IActionResult> GetAdministrator(string idNumber)
         {
-            var administratorEntity = _context.Administrators.FirstOrDefault(x=> x.IdNumber==idNumber);
+            var administratorEntity = _context.Administrators.Include(x=>x.Employee).FirstOrDefault(x=>x.Employee.IdNumber==idNumber);
+           
             if (administratorEntity == null) return NotFound();
 
-            var administrator = _mapper.Map<Administrator>(administratorEntity);
+            var administrator = _mapper.Map<AdministratorModel>(administratorEntity);
+            administrator = _mapper.Map<AdministratorModel>(administratorEntity.Employee);
 
             return Ok(administrator);
         }
@@ -86,15 +120,17 @@ namespace HRAPI.Controllers
         /// </summary>
         /// <param name="userName"></param>
         /// <returns>administrator</returns>
-        [ProducesResponseType(typeof(List<Administrator>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AdministratorModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet("{userName}")]
         public async Task<IActionResult> GetAdministratorByUserName(string userName)
         {
-            var administratorEntity = _context.Administrators.FirstOrDefault(x => x.IdNumber == userName || x.Email== userName);
+            var administratorEntity = _context.Administrators.Include(x => x.Employee).FirstOrDefault(x => x.Email == userName);
+
             if (administratorEntity == null) return NotFound();
 
-            var administrator = _mapper.Map<Administrator>(administratorEntity);
+            var administrator = _mapper.Map<AdministratorModel>(administratorEntity);
+            administrator = _mapper.Map<AdministratorModel>(administratorEntity.Employee);
 
             return Ok(administrator);
         }
@@ -110,15 +146,15 @@ namespace HRAPI.Controllers
         [HttpDelete("{idNumber}")]
         public async Task<IActionResult> DeleteAdministrator(string idNumber)
         {
-            var administartorEntity = _context.Administrators.FirstOrDefault(x=>x.IdNumber==idNumber);
+            var employeeEntity = _context.Employees.FirstOrDefault(x => x.IdNumber == idNumber);
 
-            if (administartorEntity == null) return BadRequest();
+            if (employeeEntity == null) return BadRequest();
 
-            _context.Administrators.Remove(administartorEntity);
+            employeeEntity.AdministratorId = 0;
             _context.SaveChanges();
-            var administrator = _mapper.Map<Administrator>(administartorEntity);
+            var administrator = _mapper.Map<AdministratorModel>(employeeEntity);
 
             return Ok(administrator);
+            }
         }
-    }
 }

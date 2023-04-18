@@ -4,6 +4,7 @@ using HRAPI.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRAPI.Migrations
 {
     [DbContext(typeof(HRContext))]
-    partial class HRContextModelSnapshot : ModelSnapshot
+    [Migration("20230418102947_V1.7")]
+    partial class V17
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,15 +127,17 @@ namespace HRAPI.Migrations
 
             modelBuilder.Entity("HRAPI.Entities.Employee", b =>
                 {
-                    b.HasOne("HRAPI.Entities.Administrator", null)
-                        .WithOne("Employee")
-                        .HasForeignKey("HRAPI.Entities.Employee", "AdministratorId");
+                    b.HasOne("HRAPI.Entities.Administrator", "Administrator")
+                        .WithMany("Employees")
+                        .HasForeignKey("AdministratorId")
+                        .OnDelete(DeleteBehavior.ClientCascade);
+
+                    b.Navigation("Administrator");
                 });
 
             modelBuilder.Entity("HRAPI.Entities.Administrator", b =>
                 {
-                    b.Navigation("Employee")
-                        .IsRequired();
+                    b.Navigation("Employees");
                 });
 #pragma warning restore 612, 618
         }

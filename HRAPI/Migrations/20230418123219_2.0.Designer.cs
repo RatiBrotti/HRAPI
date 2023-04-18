@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRAPI.Migrations
 {
     [DbContext(typeof(HRContext))]
-    [Migration("20230417115520_V1.0")]
-    partial class V10
+    [Migration("20230418123219_2.0")]
+    partial class _20
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,7 @@ namespace HRAPI.Migrations
 
             modelBuilder.HasSequence("val");
 
-            modelBuilder.Entity("HRAPI.Entities.AdministratorEntity", b =>
+            modelBuilder.Entity("HRAPI.Entities.Administrator", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,39 +47,31 @@ namespace HRAPI.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IdNumber")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
-
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(51)
+                        .HasColumnType("nvarchar(51)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("IdNumber")
-                        .IsUnique();
-
                     b.ToTable("Administrator", (string)null);
                 });
 
-            modelBuilder.Entity("HRAPI.Entities.EmployeeEntity", b =>
+            modelBuilder.Entity("HRAPI.Entities.Employee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AdministratorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -122,6 +114,10 @@ namespace HRAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AdministratorId")
+                        .IsUnique()
+                        .HasFilter("[AdministratorId] IS NOT NULL");
+
                     b.HasIndex("IdNumber")
                         .IsUnique();
 
@@ -131,15 +127,17 @@ namespace HRAPI.Migrations
                     b.ToTable("Emploee", (string)null);
                 });
 
-            modelBuilder.Entity("HRAPI.Entities.AdministratorEntity", b =>
+            modelBuilder.Entity("HRAPI.Entities.Employee", b =>
                 {
-                    b.HasOne("HRAPI.Entities.EmployeeEntity", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.HasOne("HRAPI.Entities.Administrator", null)
+                        .WithOne("Employee")
+                        .HasForeignKey("HRAPI.Entities.Employee", "AdministratorId");
+                });
 
-                    b.Navigation("Employee");
+            modelBuilder.Entity("HRAPI.Entities.Administrator", b =>
+                {
+                    b.Navigation("Employee")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

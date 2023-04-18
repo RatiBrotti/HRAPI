@@ -1,6 +1,6 @@
 ﻿namespace HRAPI.Entities
 {
-    public class EmployeeEntity
+    public class Employee
     {
         public int Id { get; set; }
         public string IdNumber { get; set; }
@@ -12,5 +12,7 @@
         public string Status { get; set; }
         public DateTime? DismissalDate { get; set; }
         public string Mobile { get; set; }
+        public int? AdministratorId { get; set; }
+
     }
 }

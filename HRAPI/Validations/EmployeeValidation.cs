@@ -4,7 +4,7 @@ using HRAPI.Models;
 
 namespace HRAPI.Validations
 {
-    public class EmployeeValidation : AbstractValidator<Employee>
+    public class EmployeeValidation : AbstractValidator<EmployeeModel>
     {
 
         public EmployeeValidation()

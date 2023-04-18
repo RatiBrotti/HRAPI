@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HRAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class V10 : Migration
+    public partial class v11 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,6 +24,20 @@ namespace HRAPI.Migrations
                 name: "val");
 
             migrationBuilder.CreateTable(
+                name: "Administrator",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Email = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(51)", maxLength: 51, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Administrator", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Emploee",
                 columns: table => new
                 {
@@ -37,33 +51,18 @@ namespace HRAPI.Migrations
                     JobTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     DismissalDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Mobile = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Mobile = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    AdministratorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Emploee", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Administrator",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Administrator", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Administrator_Emploee_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Emploee",
+                        name: "FK_Emploee_Administrator_AdministratorId",
+                        column: x => x.AdministratorId,
+                        principalTable: "Administrator",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -73,14 +72,9 @@ namespace HRAPI.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Administrator_EmployeeId",
-                table: "Administrator",
-                column: "EmployeeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Administrator_IdNumber",
-                table: "Administrator",
-                column: "IdNumber",
+                name: "IX_Emploee_AdministratorId",
+                table: "Emploee",
+                column: "AdministratorId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -100,10 +94,10 @@ namespace HRAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Administrator");
+                name: "Emploee");
 
             migrationBuilder.DropTable(
-                name: "Emploee");
+                name: "Administrator");
 
             migrationBuilder.DropSequence(
                 name: "ContactIDSequence");

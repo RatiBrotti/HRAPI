@@ -12,8 +12,8 @@ namespace HRAPI.DataAccess
         {
         }
 
-        public DbSet<AdministratorEntity> Administrators { get; set; }
-        public DbSet<EmployeeEntity> Employees { get; set; }
+        public DbSet<Administrator> Administrators { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
