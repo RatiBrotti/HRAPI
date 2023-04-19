@@ -7,8 +7,8 @@ namespace Lemondo.Mapper
     {
         public MapperProfiler()
         {
-            CreateMap<Administrator, Administrator>().ReverseMap();
-            CreateMap<Administrator, Administrator>().ReverseMap()
+            CreateMap<AdministratorModel, AdministratorModel>().ReverseMap();
+            CreateMap<AdministratorModel, AdministratorModel>().ReverseMap()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name.ToLower()))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName.ToLower()))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.ToLower()));

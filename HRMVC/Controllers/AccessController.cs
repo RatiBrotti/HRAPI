@@ -34,7 +34,7 @@ namespace HRMVC.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Registration(Administrator register)
+        public async Task<IActionResult> Registration(AdministratorModel register)
         {           
             if (register.Password != register.ConfirmPassword)
             {
@@ -104,7 +104,7 @@ namespace HRMVC.Controllers
             // Read the response content as a string
             var content = await response.Content.ReadAsStringAsync();
             //deserialize
-            Administrator administrator = JsonConvert.DeserializeObject<Administrator>(content);
+            AdministratorModel administrator = JsonConvert.DeserializeObject<AdministratorModel>(content);
 
             if (login.UserName == administrator.IdNumber || login.UserName.ToLower() == administrator.Email && PasswordTools.MD5Hash(login.Password+"secret key") == administrator.Password)
             {

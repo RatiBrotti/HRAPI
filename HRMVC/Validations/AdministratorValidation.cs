@@ -3,7 +3,7 @@ using HRMVC.Models;
 
 namespace HRAPI.Validations
 {
-    public class AdministratorValidation : AbstractValidator<Administrator>
+    public class AdministratorValidation : AbstractValidator<AdministratorModel>
     {
         public AdministratorValidation()
         {
